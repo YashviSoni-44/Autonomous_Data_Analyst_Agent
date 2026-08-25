@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  data-analyst-agent:
+    build: .
+    network_mode: "host"
+    environment:
+      - LLM_PROVIDER=${LLM_PROVIDER:-ollama}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - OLLAMA_BASE_URL=http://127.0.0.1:11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3:latest}
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads

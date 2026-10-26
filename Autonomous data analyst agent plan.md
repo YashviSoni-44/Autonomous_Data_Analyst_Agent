@@ -32,9 +32,9 @@ it did and why.
 | LLM | **Google Gemini API (free tier)**, fallback **Ollama** (Llama 3.2 / Qwen2.5) | Free, reliable tool-calling |
 | Agent orchestration | **LangGraph** (or a simple custom loop) | Plan → execute → visualize → summarize |
 | Backend | **FastAPI** | Async, typed, production-flavored |
-| Frontend | **Streamlit** | Fast to build, file upload + chat UI in one file |
+| Frontend | **React** (Vite + Lucide React) | Sleek dark-mode UI, file uploader, chat studio, interactive profiling, metrics dashboard |
 | Charts | **matplotlib / plotly** | Agent-generated visualizations |
-| Logging/observability | **SQLite table + a Streamlit metrics tab** (or MLflow if you want it fancier) | Tracks runs, latency, success rate |
+| Logging/observability | **SQLite table + a React metrics tab** (or MLflow if you want it fancier) | Tracks runs, latency, success rate |
 | Containerization | **Docker** | One-command run, portable |
 | Deployment | **Render / Railway / HuggingFace Spaces** | Free live demo link |
 | Version control | **Git + GitHub** | Public portfolio piece |
@@ -45,7 +45,7 @@ it did and why.
 
 ```
                 ┌─────────────────────────┐
-                │   Streamlit Frontend    │
+                │      React Frontend     │
                 │  (chat box + file       │
                 │   upload + metrics tab) │
                 └───────────┬─────────────┘
@@ -99,7 +99,8 @@ data-analyst-agent/
 │   ├── logging_db.py          # writes agent_runs to SQLite
 │   └── models.py               # pydantic request/response schemas
 ├── frontend/
-│   └── app.py                  # Streamlit UI
+│   ├── src/                   # React app components & styles
+│   └── package.json           # Frontend dependencies
 ├── data/
 │   └── sample_dataset.csv      # a demo dataset shipped with the repo
 ├── tests/
@@ -114,59 +115,39 @@ data-analyst-agent/
 
 ---
 
-## 5. Step-by-Step Build Order
+## 5. Step-by-Step Build Order & Current Status
 
-### Phase 0 — Setup (Day 1)
-1. Install Python 3.11+, Git, and an editor (VS Code / Cursor).
-2. `mkdir data-analyst-agent && cd data-analyst-agent && git init`
-3. Create a virtual environment: `python -m venv venv && source venv/bin/activate` (or `venv\Scripts\activate` on Windows)
-4. `pip install fastapi uvicorn duckdb pandas openpyxl langgraph langchain-google-genai streamlit matplotlib plotly python-dotenv pytest`
-5. Get a free Gemini API key from Google AI Studio, put it in `.env` (never commit this file — add to `.gitignore`).
-6. Grab a demo dataset (Kaggle e-commerce/sales CSV, or export a few Excel sheets) and drop it in `/data`.
+### Phase 0 — Setup ✅ (Completed)
+1. Python virtualenv, Git repo, and dependency baseline installed.
+2. Dual LLM support configured (Google Gemini & Local Ollama).
 
-### Phase 1 — Ingestion Layer
-7. Write `ingestion.py`: functions `load_csv(path)`, `load_excel(path)` (loop over `pd.read_excel(path, sheet_name=None)` for multi-sheet), `load_postgres(conn_str)` — each registers tables into a shared DuckDB connection.
-8. Write a `get_schema(duckdb_conn)` helper that queries `information_schema` and returns table/column names + types as a string the LLM can read.
-9. Test manually: load your sample CSV, confirm you can `SELECT * FROM table LIMIT 5` through DuckDB.
+### Phase 1 — Ingestion & Intelligent Profiling ✅ (Completed)
+3. `ingestion.py`: CSV, multi-sheet Excel, DuckDB shared connection.
+4. `profiling.py`: automated column type detection, null percentages, distinct cardinalities, PK detection, and data quality scoring (0–100).
+5. `/profile/{dataset_id}` API endpoint and React profiling cards.
 
-### Phase 2 — SQL Tool + Guardrails
-10. Write `tools_sql.py`: a function that takes `(question, schema)` → calls the LLM → returns SQL.
-11. Add validation: reject anything that isn't a `SELECT`, enforce a row `LIMIT`, run in a read-only DuckDB connection.
-12. Add a retry loop: if execution throws an error, feed the error back to the LLM and ask it to fix the query (max 2-3 retries).
+### Phase 2 — SQL Tool, Planning & Guardrails ✅ (Completed)
+6. `tools_sql.py`: read-only `SELECT` enforcement, limit bounds, schema retrieval.
+7. `tools_planner.py`: decomposed `AnalysisPlan` with reasoning steps.
+8. Self-correction retry loop for query syntax recovery.
 
-### Phase 3 — Chart + Summary Tools
-13. Write `tools_chart.py`: given a result dataframe, ask the LLM "does this need a chart, and what type?" then generate it with matplotlib/plotly, return as base64 PNG.
-14. Write `tools_summary.py`: feed the result rows back to the LLM, ask for a 2-3 sentence business insight.
+### Phase 3 — Memory & Multi-Table Joins ✅ (Completed)
+9. Conversational memory checkpointing via LangGraph `MemorySaver`.
+10. `tools_relations.py`: multi-table foreign-key discovery and join hints.
+11. `tools_followup.py`: dynamic follow-up query suggestions.
 
-### Phase 4 — Agent Orchestration
-15. Wire everything into a LangGraph graph (or a simple Python loop) with nodes: `plan → run_sql → maybe_chart → summarize → done`.
-16. Test end-to-end with a few sample questions against your demo dataset.
+### Phase 4 — Advanced Analytics Engine ✅ (Completed)
+12. `tools_analytics.py`: Pearson & Spearman correlation matrices, IQR/Z-Score anomaly detection, and Holt's linear exponential smoothing time-series forecasting ($h=5$) with 95% confidence bands and MAE/RMSE calculations.
+13. `node_analytics`: intent-based routing node in LangGraph.
 
-### Phase 5 — Backend API
-17. Build `main.py` with:
-    - `POST /upload` — accepts CSV/XLSX, calls ingestion, returns a `dataset_id`
-    - `POST /ask` — takes `{dataset_id, question}`, runs the agent, returns `{sql, chart_base64, summary, trace}`
-    - `GET /stats` — returns aggregated metrics from the logging DB
-18. Add request/response validation with Pydantic models.
+### Phase 5 — Critic Verification Loop & Autonomous Investigation ✅ (Completed)
+14. `tools_critic.py`: post-execution factual check, numerical grounding verification, hallucination detector, and automated self-correction loop.
+15. `tools_autonomous.py`: zero-prompt dataset investigation, hypothesis generation, KPI summary calculation, Pareto breakdown, and executive intelligence report generation (`POST /analyze/{dataset_id}`).
+16. React `AutonomousReportView.jsx`: dedicated executive dashboard with one-click follow-up navigation into the Chat Studio.
 
-### Phase 6 — Frontend
-19. Build a Streamlit app with: a file uploader, a chat-style question box, rendered SQL (in a code block), the chart, and the summary.
-20. Add a second tab/page showing the observability metrics (success rate, avg latency, recent failures).
-
-### Phase 7 — Logging & Observability
-21. On every `/ask` call, log: timestamp, question, generated SQL, execution time, retry count, success/failure, token usage (if available from the LLM response).
-22. Surface this in the `/stats` endpoint and the Streamlit metrics tab.
-
-### Phase 8 — Testing
-23. Write a handful of `pytest` tests: SQL guardrail rejects a `DROP TABLE`, ingestion correctly loads a multi-sheet Excel file, schema retrieval returns expected columns.
-
-### Phase 9 — Containerize & Deploy
-24. Write a `Dockerfile` (and `docker-compose.yml` if running backend + frontend as two services).
-25. Deploy to Render/Railway/HuggingFace Spaces free tier. Get a public URL.
-
-### Phase 10 — Documentation
-26. Write the README: problem statement, architecture diagram, example questions + screenshots, known limitations, what you'd add for production (auth, rate limiting, caching, bigger models).
-27. Push to GitHub, pin it on your profile, add the live link + repo link to your resume.
+### Phase 6 — Evaluation & Benchmarking ⏳ (Next)
+17. Golden SQL evaluation benchmark dataset (`tests/eval_benchmark.json`).
+18. Automated evaluation execution script (`tests/run_eval.py`) tracking execution accuracy and token cost metrics.
 
 ---
 

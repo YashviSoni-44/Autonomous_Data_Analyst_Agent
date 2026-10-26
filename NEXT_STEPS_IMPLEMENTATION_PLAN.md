@@ -1,7 +1,23 @@
 # 🚀 Master Implementation Plan: Evolution of Autonomous Data Analyst Agent
 
 > **Goal**: Evolve the existing functional NL-to-SQL system into an enterprise-grade, multi-agent autonomous data analyst.
-> **Guiding Principle**: Zero disruption to existing working features (`FastAPI`, `LangGraph`, `DuckDB`, `Streamlit`, `Ollama/Gemini`). Every phase incrementally layers capabilities on top of the established baseline.
+> **Guiding Principle**: Zero disruption to existing working features (`FastAPI`, `LangGraph`, `DuckDB`, `React`, `Ollama/Gemini`). Every phase incrementally layers capabilities on top of the established baseline.
+
+---
+
+## 📌 Current Operational Status & Quick Resume Guide
+
+- **Backend Service**: FastAPI running on **Port 8004** (`uvicorn backend.main:app --reload --port 8004`)
+  *(Note: Port 8000 is occupied by a separate system process `OPS RAG` on this machine).*
+- **Frontend Service**: Vite React running on **Port 5173** (`cd frontend && npm run dev`)
+- **DuckDB Session Persistence**: Dataset files stored in `./uploads/{dataset_id}.duckdb` (persists across server reloads).
+- **Execution Telemetry**: Stored in `./agent_runs.db` and rendered in the **Observability & Metrics** tab.
+- **Frontend Configuration**: [frontend/src/config.js](file:///home/yashvi.soni/Yashvi%20Soni/Autonomous_Data_Analyst_Agent/frontend/src/config.js) and [frontend/.env](file:///home/yashvi.soni/Yashvi%20Soni/Autonomous_Data_Analyst_Agent/frontend/.env) (`VITE_BACKEND_URL=http://localhost:8004`).
+
+### Recent Fixes & Completed Enhancements:
+1. **Modernized File Upload Card**: Replaced standard cloud icon with a glowing spreadsheet badge, CSV/XLSX format pills, drag-and-drop animations, and active selected file badge with instant remove button.
+2. **Autonomous Deep Dive Stabilization**: Enabled disk-backed DuckDB persistence, eliminating *"No tables found for dataset"* errors on server restarts, and automatic state reset when switching datasets.
+3. **Real-Time Observability Query Logs**: Updated backend `/stats` and `ObservabilityDashboard.jsx` to render a comprehensive **Recent Query Execution Logs** table showing timestamps, dataset IDs, questions asked, generated SQL, latency, and retries.
 
 ---
 
@@ -35,7 +51,7 @@
   - Surface potential warning flags (e.g., `"⚠️ Column 'discount' contains 15% missing values"`).
 - [x] **1.3 Data Profiling API & UI Display**:
   - Add `/profile/{dataset_id}` endpoint in `backend/main.py`.
-  - Update Streamlit sidebar in `frontend/app.py` to display interactive dataset health cards upon file upload.
+  - Update React sidebar in `frontend/src/components/Sidebar.jsx` to display interactive dataset health cards upon file upload.
 
 ---
 
@@ -48,19 +64,19 @@
   - Refactor `node_plan` to invoke the LLM to output a structured `AnalysisPlan` before SQL generation.
   - Store the plan in `AgentState` to guide `node_sql` and `node_summarize`.
 - [x] **2.3 UI Reasoning Trace**:
-  - Display the generated step-by-step reasoning plan in Streamlit expanders (`"🎯 Agent Strategy & Decomposed Analysis Plan"`).
+  - Display the generated step-by-step reasoning plan in React expanders (`"🎯 Agent Strategy & Decomposed Analysis Plan"`).
 
 ---
 
 ### Phase 3: Conversational Memory & Multi-Table Schema Integration
 *Focus: Contextual follow-up questions and automatic multi-table relationship joins.*
 
-- [ ] **3.1 LangGraph State Checkpointing (`MemorySaver`)**:
+- [x] **3.1 LangGraph State Checkpointing (`MemorySaver`)**:
   - Add thread/session state persistence so users can ask contextual follow-up questions (e.g., *"Now break that down by region"*).
-  - Implement dynamic follow-up query suggestions at the end of each agent response.
-- [ ] **3.2 Multi-Table Relationship Inference**:
+  - Implement dynamic follow-up query suggestions at the end of each agent response (`backend/agent/tools_followup.py`).
+- [x] **3.2 Multi-Table Relationship Inference (`backend/agent/tools_relations.py`)**:
   - Auto-discover foreign key relationships across multiple uploaded CSVs/Excel sheets.
-  - Enhance `tools_sql.py` prompt context to generate clean multi-table `JOIN` statements automatically.
+  - Enhance schema context to generate clean multi-table `JOIN` statements automatically.
 - [ ] **3.3 Schema Vector RAG Index (ChromaDB / FAISS)** *(Optional Scale Upgrade)*:
   - Embed large database schemas into local vector store to retrieve only top-k relevant tables for massive schemas.
 
@@ -69,24 +85,24 @@
 ### Phase 4: Advanced Analytics Engine (Statistics, Outliers & Forecasting)
 *Focus: Expand beyond SQL queries to statistical testing, anomaly detection, and predictive modeling.*
 
-- [ ] **4.1 Statistical Analysis Tools (`backend/agent/tools_analytics.py`)**:
+- [x] **4.1 Statistical Analysis Tools (`backend/agent/tools_analytics.py`)**:
   - Pearson/Spearman correlation matrices for numerical columns.
   - Outlier detection via IQR (Interquartile Range) and Z-score methods.
-- [ ] **4.2 Time-Series Forecasting Tool**:
-  - Detect time-series queries and invoke `statsmodels` (Exponential Smoothing / Holt-Winters) or baseline ARIMA.
+- [x] **4.2 Time-Series Forecasting Tool**:
+  - Holt's Linear Exponential Smoothing with trend projection and 95% confidence intervals.
   - Return forecasted metrics along with model accuracy scores (MAE / RMSE).
-- [ ] **4.3 Agent Routing Node (`AnalyticsRouter`)**:
-  - Add an intent classification router in LangGraph to direct queries to `SQL_Node`, `Statistical_Node`, or `Forecast_Node`.
+- [x] **4.3 Agent Routing Node (`AnalyticsRouter`)**:
+  - LangGraph intent routing node (`node_analytics`) dynamically directing queries to SQL, Correlation, Outlier, or Forecast execution.
 
 ---
 
 ### Phase 5: Critic Verification Loop & Autonomous Investigation Mode
 *Focus: Autonomous verification of answers and self-directed dataset exploration.*
 
-- [ ] **5.1 Critic / Verification Node (`node_critic`)**:
+- [x] **5.1 Critic / Verification Node (`node_critic`)**:
   - Add a post-execution LLM check comparing raw SQL outputs against executive summaries and charts.
   - Reject hallucinated data, mismatched metrics, or invalid chart types with auto-correction retries.
-- [ ] **5.2 Autonomous "Analyze Dataset" Mode**:
+- [x] **5.2 Autonomous "Analyze Dataset" Mode**:
   - Implement zero-prompt dataset analysis: agent independently formulates hypotheses, detects trend anomalies, ranks top findings, and generates an executive overview.
 
 ---
@@ -100,7 +116,7 @@
   - Benchmark query execution accuracy, SQL syntax success rate, and latency.
 - [ ] **6.3 Cost & Token Intelligence**:
   - Track prompt & completion token consumption per query; calculate costs for Gemini vs. Ollama.
-  - Surface cost and token breakdowns in the Streamlit Observability tab.
+  - Surface cost and token breakdowns in the React Observability tab.
 
 ---
 
@@ -133,4 +149,4 @@
 To ensure existing code remains 100% operational throughout development:
 1. All new nodes in `backend/agent/` will extend `AgentState` without removing existing fields.
 2. New API endpoints in `backend/main.py` will be additive (`/profile`, `/ask_stream`, `/eval`) while keeping `/upload`, `/ask`, and `/stats` untouched.
-3. Modules will be introduced incrementally with fallbacks so the app is always runnable via `streamlit run frontend/app.py` and `uvicorn backend.main:app`.
+3. Modules will be introduced incrementally with fallbacks so the app is always runnable via `cd frontend && npm run dev` and `uvicorn backend.main:app`.

@@ -42,7 +42,7 @@ Business Summary:
 
 Suggest 3 follow-up questions as a JSON array:"""
 
-        raw = call_llm(prompt, system_instruction=FOLLOWUP_SYSTEM_PROMPT)
+        raw = call_llm(prompt, system_instruction=FOLLOWUP_SYSTEM_PROMPT, timeout=20, optional=True)
         cleaned = raw.strip()
 
         # Strip markdown if present

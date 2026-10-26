@@ -153,14 +153,40 @@ def profile_table(conn: duckdb.DuckDBPyConnection, table_name: str) -> TableProf
     )
 
 
+PROFILE_CACHE: Dict[str, ProfileResponse] = {}
+
+def clear_profile_cache(dataset_id: str = None):
+    """Clears cached profile for a dataset or all datasets."""
+    if dataset_id:
+        PROFILE_CACHE.pop(dataset_id, None)
+    else:
+        PROFILE_CACHE.clear()
+
+
 def profile_dataset(dataset_id: str) -> ProfileResponse:
     """
     Profiles all tables for a registered dataset in DuckDB and aggregates quality metrics.
+    Caches profiles in memory to prevent duplicate profiling during concurrent client requests.
     """
+    if dataset_id in PROFILE_CACHE:
+        return PROFILE_CACHE[dataset_id]
+
     conn = get_dataset_connection(dataset_id)
     tables_df = conn.execute("SHOW TABLES").fetchdf()
 
-    if tables_df.empty:
+    table_names = []
+    if not tables_df.empty:
+        table_names = tables_df["name"].tolist()
+    else:
+        # Fallback to registered table names in DATASET_STORE if available
+        try:
+            from backend.ingestion import DATASET_STORE
+            if dataset_id in DATASET_STORE and DATASET_STORE[dataset_id].get("tables"):
+                table_names = DATASET_STORE[dataset_id]["tables"]
+        except Exception:
+            pass
+
+    if not table_names:
         return ProfileResponse(
             dataset_id=dataset_id,
             overall_quality_score=100.0,
@@ -176,7 +202,7 @@ def profile_dataset(dataset_id: str) -> ProfileResponse:
     total_columns = 0
     total_quality_points = 0.0
 
-    for table_name in tables_df["name"]:
+    for table_name in table_names:
         t_profile = profile_table(conn, table_name)
         table_profiles.append(t_profile)
         total_rows += t_profile.row_count
@@ -186,7 +212,7 @@ def profile_dataset(dataset_id: str) -> ProfileResponse:
 
     overall_score = round(total_quality_points / max(1, len(table_profiles)), 1)
 
-    return ProfileResponse(
+    result = ProfileResponse(
         dataset_id=dataset_id,
         overall_quality_score=overall_score,
         tables=table_profiles,
@@ -194,3 +220,5 @@ def profile_dataset(dataset_id: str) -> ProfileResponse:
         total_columns=total_columns,
         warnings=all_warnings,
     )
+    PROFILE_CACHE[dataset_id] = result
+    return result

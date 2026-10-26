@@ -21,6 +21,8 @@ class AskRequest(BaseModel):
     dataset_id: str
     question: str
     session_id: Optional[str] = None
+    conversation_context: Optional[str] = ""
+    request_id: Optional[str] = None
 
 
 class TraceStep(BaseModel):
@@ -53,6 +55,22 @@ class AskResponse(BaseModel):
     error: Optional[str] = None
     follow_up_questions: list[str] = []
     join_hints: Optional[str] = None
+    analysis_type: Optional[str] = None
+    analytics_result: Optional[dict] = None
+    critic_result: Optional[dict] = None
+
+
+class AutonomousReport(BaseModel):
+    dataset_id: str
+    table_name: str
+    executive_summary: str
+    kpi_metrics: list[dict]
+    top_findings: list[str]
+    anomalies_detected: list[dict]
+    correlations: list[dict]
+    chart_base64: Optional[str] = None
+    recommended_actions: list[str]
+    generated_at: str
 
 
 
@@ -64,6 +82,7 @@ class StatsResponse(BaseModel):
     avg_latency_seconds: float
     avg_retries: float
     recent_failures: list[dict]
+    recent_runs: list[dict] = []
 
 
 class ColumnProfile(BaseModel):

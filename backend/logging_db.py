@@ -64,7 +64,8 @@ def get_stats():
             "success_rate": 0.0,
             "avg_latency_seconds": 0.0,
             "avg_retries": 0.0,
-            "recent_failures": []
+            "recent_failures": [],
+            "recent_runs": []
         }
         
     cursor.execute("SELECT COUNT(*) FROM agent_runs WHERE success = 1")
@@ -79,6 +80,23 @@ def get_stats():
     cursor.execute("SELECT AVG(retries) FROM agent_runs")
     avg_retries = round(cursor.fetchone()[0] or 0.0, 2)
     
+    cursor.execute("SELECT id, timestamp, dataset_id, question, sql, latency_seconds, retries, success, error FROM agent_runs ORDER BY id DESC LIMIT 20")
+    all_runs_rows = cursor.fetchall()
+    recent_runs = [
+        {
+            "id": row[0],
+            "timestamp": row[1],
+            "dataset_id": row[2],
+            "question": row[3],
+            "sql": row[4],
+            "latency_seconds": row[5],
+            "retries": row[6],
+            "success": bool(row[7]),
+            "error": row[8],
+        }
+        for row in all_runs_rows
+    ]
+
     cursor.execute("SELECT id, timestamp, question, sql, error FROM agent_runs WHERE success = 0 ORDER BY id DESC LIMIT 10")
     failures_rows = cursor.fetchall()
     recent_failures = [
@@ -94,5 +112,6 @@ def get_stats():
         "success_rate": success_rate,
         "avg_latency_seconds": avg_latency,
         "avg_retries": avg_retries,
-        "recent_failures": recent_failures
+        "recent_failures": recent_failures,
+        "recent_runs": recent_runs,
     }

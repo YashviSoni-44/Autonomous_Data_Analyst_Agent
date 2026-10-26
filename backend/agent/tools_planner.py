@@ -44,19 +44,19 @@ User Question:
 
 Generate the JSON Analysis Plan:"""
 
-    raw_response = call_llm(user_prompt, system_instruction=PLANNER_SYSTEM_PROMPT)
-
-    # Attempt to extract JSON
-    cleaned = raw_response.strip()
-    # Strip markdown backticks if present
-    if "```" in cleaned:
-        match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", cleaned, re.DOTALL)
-        if match:
-            cleaned = match.group(1)
-        else:
-            cleaned = cleaned.replace("```json", "").replace("```", "").strip()
-
     try:
+        raw_response = call_llm(user_prompt, system_instruction=PLANNER_SYSTEM_PROMPT, timeout=25, optional=True)
+
+        # Attempt to extract JSON
+        cleaned = raw_response.strip()
+        # Strip markdown backticks if present
+        if "```" in cleaned:
+            match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", cleaned, re.DOTALL)
+            if match:
+                cleaned = match.group(1)
+            else:
+                cleaned = cleaned.replace("```json", "").replace("```", "").strip()
+
         plan_dict = json.loads(cleaned)
         # Validate through Pydantic
         plan_obj = AnalysisPlan(

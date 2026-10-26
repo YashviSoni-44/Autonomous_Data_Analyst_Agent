@@ -28,3 +28,20 @@ def test_get_schema():
     assert "Table: sample_dataset" in schema_str
     assert "sales_amount" in schema_str
     assert "category" in schema_str
+
+
+def test_excel_multi_sheet_ingestion(tmp_path):
+    import pandas as pd
+    excel_file = tmp_path / "test_data.xlsx"
+    with pd.ExcelWriter(excel_file) as writer:
+        pd.DataFrame({"id": [1, 2], "product": ["A", "B"]}).to_excel(writer, sheet_name="product_lookup", index=False)
+        pd.DataFrame({"id": [1, 2], "amount": [100, 200]}).to_excel(writer, sheet_name="sales_data", index=False)
+
+    dataset_id, tables = load_file_into_duckdb(str(excel_file))
+    assert len(tables) == 2
+    assert tables == ["product_lookup", "sales_data"]
+
+    conn = get_dataset_connection(dataset_id)
+    catalog_tables = conn.execute("SHOW TABLES").fetchdf()["name"].tolist()
+    assert sorted(catalog_tables) == ["product_lookup", "sales_data"]
+

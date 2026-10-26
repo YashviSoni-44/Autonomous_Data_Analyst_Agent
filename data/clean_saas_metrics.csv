@@ -1,0 +1,26 @@
+subscription_id,customer_id,company_name,plan_tier,mrr_usd,billing_cycle,signup_date,renewal_date,is_active,churn_reason,seats_purchased,nps_score
+SUB-1000,CUST-200,Acme Cloud Corp,Enterprise,4500.0,Annual,2025-01-10,2026-01-10,True,None,150,9
+SUB-1001,CUST-201,BetaTech Solutions,Professional,850.0,Monthly,2025-02-14,2026-03-14,True,None,25,8
+SUB-1002,CUST-202,Crestview Logistics,Starter,99.0,Monthly,2025-03-01,2025-06-01,False,Budget Constraints,5,6
+SUB-1003,CUST-203,DataForge Analytics,Enterprise,6200.0,Annual,2024-11-20,2025-11-20,True,None,220,10
+SUB-1004,CUST-204,EchoStream Media,Professional,1200.0,Monthly,2025-04-18,2026-04-18,True,None,40,7
+SUB-1005,CUST-205,Frontline Cyber,Enterprise,5100.0,Annual,2025-01-05,2026-01-05,True,None,180,9
+SUB-1006,CUST-206,GreenWave Systems,Starter,120.0,Monthly,2025-05-12,2025-09-12,False,Switched to Competitor,4,5
+SUB-1007,CUST-207,Hyperion AI Labs,Enterprise,8900.0,Annual,2024-09-15,2025-09-15,True,None,300,10
+SUB-1008,CUST-208,InnoVision Healthcare,Professional,1500.0,Monthly,2025-06-01,2026-06-01,True,None,50,8
+SUB-1009,CUST-209,Jupiter Financial,Enterprise,7400.0,Annual,2024-12-01,2025-12-01,True,None,260,9
+SUB-1010,CUST-210,Kite Robotics,Professional,750.0,Monthly,2025-07-22,2026-07-22,True,None,20,8
+SUB-1011,CUST-211,Loomis Security,Starter,89.0,Monthly,2025-08-11,2025-10-11,False,Missing Features,3,4
+SUB-1012,CUST-212,Matrix Dynamics,Enterprise,5800.0,Annual,2025-02-28,2026-02-28,True,None,200,9
+SUB-1013,CUST-213,Nova Retail Group,Professional,950.0,Monthly,2025-03-15,2026-03-15,True,None,30,8
+SUB-1014,CUST-214,OmniPeak Ventures,Starter,149.0,Monthly,2025-09-01,2026-03-01,True,None,6,7
+SUB-1015,CUST-215,Pulse Energy,Enterprise,6700.0,Annual,2024-10-10,2025-10-10,True,None,240,10
+SUB-1016,CUST-216,Quantum Softworks,Professional,1100.0,Monthly,2025-04-05,2026-04-05,True,None,35,8
+SUB-1017,CUST-217,Redwood BioTech,Enterprise,4900.0,Annual,2025-01-25,2026-01-25,True,None,160,9
+SUB-1018,CUST-218,Skyline Networks,Starter,99.0,Monthly,2025-05-30,2025-07-30,False,Poor Support,4,3
+SUB-1019,CUST-219,TerraForm Infra,Professional,1350.0,Monthly,2025-06-18,2026-06-18,True,None,45,9
+SUB-1020,CUST-220,Unity Global,Enterprise,8200.0,Annual,2024-08-12,2025-08-12,True,None,290,10
+SUB-1021,CUST-221,Vanguard Labs,Professional,800.0,Monthly,2025-07-07,2026-07-07,True,None,22,8
+SUB-1022,CUST-222,Windmill Tech,Starter,110.0,Monthly,2025-10-01,2026-02-01,False,Budget Constraints,4,5
+SUB-1023,CUST-223,Xeno Games,Professional,1400.0,Monthly,2025-08-15,2026-08-15,True,None,48,8
+SUB-1024,CUST-224,Zenith Automation,Enterprise,9500.0,Annual,2024-07-01,2025-07-01,True,None,350,10

@@ -1,0 +1,9 @@
+campaign_id,campaign_name,channel,target_device,start_date,end_date,budget_usd,actual_spend,impressions,clicks,conversions,ctr_pct,cpc_usd,roi_multiplier
+CMP-101,Q1 Spring Product Launch,Google Search,Mobile,2026-01-01,2026-01-31,15000.0,14820.5,485200,24260,1210,5.00%,0.61,3.4
+CMP-102,Enterprise Brand Awareness,LinkedIn Ads,Desktop,2026-01-10,2026-02-10,25000.0,24900.0,120500,3615,180,3.00%,6.89,2.1
+CMP-103,Gen Z Viral Challenge,TikTok Ads,Mobile,2026-01-15,2026-01-25,10000.0,9850.25,1520000,45600,2280,3.00%,0.22,4.8
+CMP-104,Retargeting Abandoned Cart,Meta Instagram,Mobile,2026-02-01,2026-02-28,8000.0,7940.1,210000,14700,1470,7.00%,0.54,5.2
+CMP-105,Newsletter Subscriber Drive,Email Sponsorship,Cross-Platform,2026-02-05,2026-02-20,5000.0,4900.0,85000,6800,850,8.00%,0.72,2.9
+CMP-106,Competitor Keyword Conquest,Google Search,Desktop,2026-02-15,2026-03-15,18000.0,17850.0,160000,9600,576,6.00%,1.86,2.4
+CMP-107,Developer Community Outreach,Reddit Tech,Desktop,2026-02-20,2026-03-10,6000.0,5890.0,340000,10200,408,3.00%,0.58,1.8
+CMP-108,Spring Flash Sale Promo,Meta Facebook,Mobile,2026-03-01,2026-03-07,12000.0,11980.0,650000,32500,2600,5.00%,0.37,6.1

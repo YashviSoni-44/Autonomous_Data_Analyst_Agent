@@ -1,0 +1,632 @@
+[
+  {
+    "event_id": "EVT-1000",
+    "session_id": "SES-490",
+    "timestamp": "2026-03-01T10:53:49Z",
+    "event_type": "checkout_started",
+    "user_profile": {
+      "user_id": "USR-500",
+      "country": "JP",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Chrome",
+      "os": "Android",
+      "is_mobile": true
+    },
+    "page_url": "https://mystore.example.com/products/ergonomic-chair",
+    "duration_seconds": 301.68
+  },
+  {
+    "event_id": "EVT-1001",
+    "session_id": "SES-252",
+    "timestamp": "2026-03-01T11:09:11Z",
+    "event_type": "page_view",
+    "user_profile": {
+      "user_id": "USR-501",
+      "country": "JP",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Chrome",
+      "os": "Android",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/ergonomic-chair",
+    "duration_seconds": 138.25
+  },
+  {
+    "event_id": "EVT-1002",
+    "session_id": "SES-389",
+    "timestamp": "2026-03-01T12:22:13Z",
+    "event_type": "add_to_cart",
+    "user_profile": {
+      "user_id": "USR-502",
+      "country": "DE",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Edge",
+      "os": "macOS",
+      "is_mobile": true
+    },
+    "page_url": "https://mystore.example.com/products/4k-monitor",
+    "duration_seconds": 159.37
+  },
+  {
+    "event_id": "EVT-1003",
+    "session_id": "SES-404",
+    "timestamp": "2026-03-01T13:31:50Z",
+    "event_type": "search_query",
+    "user_profile": {
+      "user_id": "USR-503",
+      "country": "US",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Safari",
+      "os": "Android",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/ergonomic-chair",
+    "duration_seconds": 57.91
+  },
+  {
+    "event_id": "EVT-1004",
+    "session_id": "SES-254",
+    "timestamp": "2026-03-01T14:35:26Z",
+    "event_type": "checkout_started",
+    "user_profile": {
+      "user_id": "USR-504",
+      "country": "CA",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Edge",
+      "os": "Windows",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/laptop-x1",
+    "duration_seconds": 41.02
+  },
+  {
+    "event_id": "EVT-1005",
+    "session_id": "SES-277",
+    "timestamp": "2026-03-01T15:05:31Z",
+    "event_type": "search_query",
+    "user_profile": {
+      "user_id": "USR-505",
+      "country": "JP",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Chrome",
+      "os": "Windows",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/laptop-x1",
+    "duration_seconds": 325.79
+  },
+  {
+    "event_id": "EVT-1006",
+    "session_id": "SES-256",
+    "timestamp": "2026-03-01T16:05:40Z",
+    "event_type": "checkout_started",
+    "user_profile": {
+      "user_id": "USR-506",
+      "country": "GB",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Firefox",
+      "os": "iOS",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/ergonomic-chair",
+    "duration_seconds": 53.61
+  },
+  {
+    "event_id": "EVT-1007",
+    "session_id": "SES-249",
+    "timestamp": "2026-03-01T17:29:36Z",
+    "event_type": "click_cta",
+    "user_profile": {
+      "user_id": "USR-507",
+      "country": "IN",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Chrome",
+      "os": "iOS",
+      "is_mobile": true
+    },
+    "page_url": "https://mystore.example.com/products/laptop-x1",
+    "duration_seconds": 135.15
+  },
+  {
+    "event_id": "EVT-1008",
+    "session_id": "SES-115",
+    "timestamp": "2026-03-01T18:58:35Z",
+    "event_type": "checkout_started",
+    "user_profile": {
+      "user_id": "USR-508",
+      "country": "US",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Safari",
+      "os": "Windows",
+      "is_mobile": true
+    },
+    "page_url": "https://mystore.example.com/products/ergonomic-chair",
+    "duration_seconds": 115.95
+  },
+  {
+    "event_id": "EVT-1009",
+    "session_id": "SES-451",
+    "timestamp": "2026-03-01T19:56:39Z",
+    "event_type": "add_to_cart",
+    "user_profile": {
+      "user_id": "USR-509",
+      "country": "US",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Chrome",
+      "os": "iOS",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/4k-monitor",
+    "duration_seconds": 296.65
+  },
+  {
+    "event_id": "EVT-1010",
+    "session_id": "SES-285",
+    "timestamp": "2026-03-01T20:23:30Z",
+    "event_type": "click_cta",
+    "user_profile": {
+      "user_id": "USR-510",
+      "country": "JP",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Firefox",
+      "os": "Android",
+      "is_mobile": true
+    },
+    "page_url": "https://mystore.example.com/products/laptop-x1",
+    "duration_seconds": 53.76
+  },
+  {
+    "event_id": "EVT-1011",
+    "session_id": "SES-132",
+    "timestamp": "2026-03-01T21:52:43Z",
+    "event_type": "add_to_cart",
+    "user_profile": {
+      "user_id": "USR-511",
+      "country": "JP",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Firefox",
+      "os": "iOS",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/laptop-x1",
+    "duration_seconds": 335.45
+  },
+  {
+    "event_id": "EVT-1012",
+    "session_id": "SES-498",
+    "timestamp": "2026-03-01T10:59:01Z",
+    "event_type": "checkout_started",
+    "user_profile": {
+      "user_id": "USR-512",
+      "country": "JP",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Safari",
+      "os": "Android",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/ergonomic-chair",
+    "duration_seconds": 126.4
+  },
+  {
+    "event_id": "EVT-1013",
+    "session_id": "SES-292",
+    "timestamp": "2026-03-01T11:09:47Z",
+    "event_type": "page_view",
+    "user_profile": {
+      "user_id": "USR-513",
+      "country": "JP",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Firefox",
+      "os": "iOS",
+      "is_mobile": true
+    },
+    "page_url": "https://mystore.example.com/products/ergonomic-chair",
+    "duration_seconds": 40.09
+  },
+  {
+    "event_id": "EVT-1014",
+    "session_id": "SES-313",
+    "timestamp": "2026-03-01T12:48:45Z",
+    "event_type": "search_query",
+    "user_profile": {
+      "user_id": "USR-514",
+      "country": "IN",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Safari",
+      "os": "iOS",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/laptop-x1",
+    "duration_seconds": 302.35
+  },
+  {
+    "event_id": "EVT-1015",
+    "session_id": "SES-178",
+    "timestamp": "2026-03-01T13:10:33Z",
+    "event_type": "click_cta",
+    "user_profile": {
+      "user_id": "USR-515",
+      "country": "JP",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Safari",
+      "os": "Windows",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/ergonomic-chair",
+    "duration_seconds": 313.02
+  },
+  {
+    "event_id": "EVT-1016",
+    "session_id": "SES-119",
+    "timestamp": "2026-03-01T14:50:05Z",
+    "event_type": "add_to_cart",
+    "user_profile": {
+      "user_id": "USR-516",
+      "country": "US",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Safari",
+      "os": "Android",
+      "is_mobile": true
+    },
+    "page_url": "https://mystore.example.com/products/ergonomic-chair",
+    "duration_seconds": 334.62
+  },
+  {
+    "event_id": "EVT-1017",
+    "session_id": "SES-477",
+    "timestamp": "2026-03-01T15:18:55Z",
+    "event_type": "checkout_started",
+    "user_profile": {
+      "user_id": "USR-517",
+      "country": "DE",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Firefox",
+      "os": "Android",
+      "is_mobile": true
+    },
+    "page_url": "https://mystore.example.com/products/laptop-x1",
+    "duration_seconds": 287.55
+  },
+  {
+    "event_id": "EVT-1018",
+    "session_id": "SES-162",
+    "timestamp": "2026-03-01T16:15:06Z",
+    "event_type": "add_to_cart",
+    "user_profile": {
+      "user_id": "USR-518",
+      "country": "IN",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Firefox",
+      "os": "macOS",
+      "is_mobile": true
+    },
+    "page_url": "https://mystore.example.com/products/4k-monitor",
+    "duration_seconds": 57.78
+  },
+  {
+    "event_id": "EVT-1019",
+    "session_id": "SES-421",
+    "timestamp": "2026-03-01T17:04:10Z",
+    "event_type": "checkout_started",
+    "user_profile": {
+      "user_id": "USR-519",
+      "country": "CA",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Safari",
+      "os": "Android",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/wireless-mouse",
+    "duration_seconds": 24.53
+  },
+  {
+    "event_id": "EVT-1020",
+    "session_id": "SES-242",
+    "timestamp": "2026-03-01T18:30:06Z",
+    "event_type": "page_view",
+    "user_profile": {
+      "user_id": "USR-500",
+      "country": "DE",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Firefox",
+      "os": "macOS",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/laptop-x1",
+    "duration_seconds": 145.26
+  },
+  {
+    "event_id": "EVT-1021",
+    "session_id": "SES-167",
+    "timestamp": "2026-03-01T19:31:07Z",
+    "event_type": "page_view",
+    "user_profile": {
+      "user_id": "USR-501",
+      "country": "IN",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Edge",
+      "os": "macOS",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/ergonomic-chair",
+    "duration_seconds": 178.93
+  },
+  {
+    "event_id": "EVT-1022",
+    "session_id": "SES-485",
+    "timestamp": "2026-03-01T20:52:46Z",
+    "event_type": "add_to_cart",
+    "user_profile": {
+      "user_id": "USR-502",
+      "country": "CA",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Safari",
+      "os": "iOS",
+      "is_mobile": true
+    },
+    "page_url": "https://mystore.example.com/products/ergonomic-chair",
+    "duration_seconds": 60.33
+  },
+  {
+    "event_id": "EVT-1023",
+    "session_id": "SES-323",
+    "timestamp": "2026-03-01T21:44:50Z",
+    "event_type": "click_cta",
+    "user_profile": {
+      "user_id": "USR-503",
+      "country": "CA",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Safari",
+      "os": "Android",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/laptop-x1",
+    "duration_seconds": 14.69
+  },
+  {
+    "event_id": "EVT-1024",
+    "session_id": "SES-394",
+    "timestamp": "2026-03-01T10:28:21Z",
+    "event_type": "click_cta",
+    "user_profile": {
+      "user_id": "USR-504",
+      "country": "GB",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Chrome",
+      "os": "Android",
+      "is_mobile": true
+    },
+    "page_url": "https://mystore.example.com/products/wireless-mouse",
+    "duration_seconds": 233.33
+  },
+  {
+    "event_id": "EVT-1025",
+    "session_id": "SES-347",
+    "timestamp": "2026-03-01T11:30:23Z",
+    "event_type": "page_view",
+    "user_profile": {
+      "user_id": "USR-505",
+      "country": "US",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Firefox",
+      "os": "Windows",
+      "is_mobile": true
+    },
+    "page_url": "https://mystore.example.com/products/4k-monitor",
+    "duration_seconds": 199.1
+  },
+  {
+    "event_id": "EVT-1026",
+    "session_id": "SES-377",
+    "timestamp": "2026-03-01T12:21:02Z",
+    "event_type": "add_to_cart",
+    "user_profile": {
+      "user_id": "USR-506",
+      "country": "IN",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Firefox",
+      "os": "iOS",
+      "is_mobile": true
+    },
+    "page_url": "https://mystore.example.com/products/ergonomic-chair",
+    "duration_seconds": 242.56
+  },
+  {
+    "event_id": "EVT-1027",
+    "session_id": "SES-433",
+    "timestamp": "2026-03-01T13:56:04Z",
+    "event_type": "search_query",
+    "user_profile": {
+      "user_id": "USR-507",
+      "country": "IN",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Safari",
+      "os": "Android",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/ergonomic-chair",
+    "duration_seconds": 252.08
+  },
+  {
+    "event_id": "EVT-1028",
+    "session_id": "SES-136",
+    "timestamp": "2026-03-01T14:28:27Z",
+    "event_type": "search_query",
+    "user_profile": {
+      "user_id": "USR-508",
+      "country": "DE",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Safari",
+      "os": "Android",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/laptop-x1",
+    "duration_seconds": 323.46
+  },
+  {
+    "event_id": "EVT-1029",
+    "session_id": "SES-351",
+    "timestamp": "2026-03-01T15:17:38Z",
+    "event_type": "page_view",
+    "user_profile": {
+      "user_id": "USR-509",
+      "country": "DE",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Safari",
+      "os": "Windows",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/laptop-x1",
+    "duration_seconds": 229.32
+  },
+  {
+    "event_id": "EVT-1030",
+    "session_id": "SES-294",
+    "timestamp": "2026-03-01T16:31:20Z",
+    "event_type": "add_to_cart",
+    "user_profile": {
+      "user_id": "USR-510",
+      "country": "IN",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Chrome",
+      "os": "iOS",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/laptop-x1",
+    "duration_seconds": 187.2
+  },
+  {
+    "event_id": "EVT-1031",
+    "session_id": "SES-483",
+    "timestamp": "2026-03-01T17:20:05Z",
+    "event_type": "search_query",
+    "user_profile": {
+      "user_id": "USR-511",
+      "country": "JP",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Safari",
+      "os": "Windows",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/laptop-x1",
+    "duration_seconds": 240.2
+  },
+  {
+    "event_id": "EVT-1032",
+    "session_id": "SES-323",
+    "timestamp": "2026-03-01T18:14:59Z",
+    "event_type": "search_query",
+    "user_profile": {
+      "user_id": "USR-512",
+      "country": "GB",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Firefox",
+      "os": "macOS",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/ergonomic-chair",
+    "duration_seconds": 40.3
+  },
+  {
+    "event_id": "EVT-1033",
+    "session_id": "SES-126",
+    "timestamp": "2026-03-01T19:52:04Z",
+    "event_type": "add_to_cart",
+    "user_profile": {
+      "user_id": "USR-513",
+      "country": "US",
+      "is_subscriber": false
+    },
+    "device_info": {
+      "browser": "Firefox",
+      "os": "macOS",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/ergonomic-chair",
+    "duration_seconds": 144.03
+  },
+  {
+    "event_id": "EVT-1034",
+    "session_id": "SES-497",
+    "timestamp": "2026-03-01T20:37:42Z",
+    "event_type": "checkout_started",
+    "user_profile": {
+      "user_id": "USR-514",
+      "country": "CA",
+      "is_subscriber": true
+    },
+    "device_info": {
+      "browser": "Safari",
+      "os": "iOS",
+      "is_mobile": false
+    },
+    "page_url": "https://mystore.example.com/products/laptop-x1",
+    "duration_seconds": 106.32
+  }
+]

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TaxInvoicesBatch batch_id="BATCH-2026-Q1" fiscal_year="2026" jurisdiction="US-CA">
+  <Invoice id="INV-5501" date="2026-01-15" currency="USD">
+    <Seller>
+      <Name>Apex Hardware Supply</Name>
+      <TaxId>US-94-3829104</TaxId>
+    </Seller>
+    <Buyer>
+      <Name>Pacific Crest Logistics</Name>
+      <TaxId>US-95-1827492</TaxId>
+    </Buyer>
+    <LineItems>
+      <Item sku="RACK-42U" quantity="2" unit_price="850.00">Server Rack 42U Enclosure</Item>
+      <Item sku="PDU-30A" quantity="4" unit_price="175.00">Switched PDU 30A 120V</Item>
+    </LineItems>
+    <TaxRate percentage="8.25" tax_amount="198.00" />
+    <Subtotal>2400.00</Subtotal>
+    <GrandTotal>2598.00</GrandTotal>
+  </Invoice>
+  <Invoice id="INV-5502" date="2026-01-20" currency="USD">
+    <Seller>
+      <Name>Apex Hardware Supply</Name>
+      <TaxId>US-94-3829104</TaxId>
+    </Seller>
+    <Buyer>
+      <Name>Silverline Data Centers</Name>
+      <TaxId>US-91-9988771</TaxId>
+    </Buyer>
+    <LineItems>
+      <Item sku="CAB-CAT6-1000" quantity="10" unit_price="120.00">Cat6 Spool 1000ft Bulk</Item>
+      <Item sku="PATCH-48P" quantity="6" unit_price="85.00">Cat6 Patch Panel 48-Port</Item>
+    </LineItems>
+    <TaxRate percentage="8.25" tax_amount="141.08" />
+    <Subtotal>1710.00</Subtotal>
+    <GrandTotal>1851.08</GrandTotal>
+  </Invoice>
+</TaxInvoicesBatch>

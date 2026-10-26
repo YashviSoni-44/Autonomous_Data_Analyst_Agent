@@ -1,0 +1,32 @@
+return_id,order_id,customer_name,product_category,product_title,item_price,quantity_returned,return_reason,refund_status,request_date,customer_rating
+RET-001,ORD-8801,John Doe,Electronics,Wireless Bluetooth Earbuds,$49.99,1,Defective sound,Refunded,2026-01-10,1
+RET-002,ORD-8802,Jane Smith, apparel ,Men's Denim Jacket,$89.50,2,Wrong size,pending,12/01/2026,3
+RET-003,ORD-8803,Bob Wilson,ELECTRONICS,4K Gaming Monitor,399.00,1,Arrived Damaged,Refunded,2026/01/14,2
+RET-004,ORD-8804,Alice Cooper,Home & Kitchen,Espresso Coffee Machine,$149.95,1,Not as pictured,REFUNDED,2026-01-15,4
+RET-005,ORD-8805,  Charlie Brown  ,Apparel,Running Sneakers,79.99,1,Size too small,Approved,"Jan 16, 2026",3
+RET-006,ORD-8806,David Miller,Electronics,USB-C Fast Charger,$19.99,10,Overheating hazard,Refunded,2026-01-18,1
+RET-007,ORD-8807,Emma Watson,Beauty,Organic Face Serum,N/A,1,Skin irritation,Pending,2026-01-20,2
+RET-008,ORD-8808,Frank Castle,Footwear,Tactical Hiking Boots,$120.00,-1,Wrong color,Rejected,2026-01-22,1
+RET-009,ORD-8809,Grace Hopper,Books,Computer Science Handbook,$55.00,1,?,refunded,2026-01-25,5
+RET-010,ORD-8810,Hank Pym, electronics ,Smart Home Thermostat,$180.00,1,Doesn't connect to WiFi,Refunded,2026-01-28,2
+RET-011,ORD-8811,Ivy Pepper,Home & Kitchen,Cast Iron Skillet,$45.00,1,Rusted on arrival,Refunded,2026-02-30,1
+RET-012,ORD-8812,Jack Reacher,Apparel,Winter Parka,-95.00,1,Customer changed mind,Pending,2026-02-02,999
+RET-013,ORD-8813,Karen Page,Beauty,Herbal Shampoo,$15.50,2,Leaked during shipping,Refunded,2026-02-04,2
+RET-014,ORD-8814,Luke Cage,ELECTRONICS,Noise Cancelling Headphones,$250.00,1,Sound cut out,REFUNDED,2026-02-06,1
+RET-015,ORD-8815,Mia Toretto,Home & Kitchen,Blender 1000W,null,1,Motor smoked,Refunded,2026-02-08,1
+RET-016,ORD-8816,Nick Fury,Footwear,Running Shoes,$110.00,1,Uncomfortable fit,Approved,2026-02-10,3
+RET-017,ORD-8817,Olivia Pope,Apparel,Silk Blouse,$85.00,1,Stained collar,Refunded,2026-02-12,2
+RET-018,ORD-8818,Peter Parker,Electronics,Camera Lens Filter,$28.00,50000,Defective thread,Pending,2026-02-14,3
+RET-019,ORD-8819,Quinn Fabray,Books,Art History Vol 1,$62.00,1,None,refunded,2026-02-16,4
+RET-020,ORD-8820,Ray Palmer,Beauty,Sunscreen SPF 50,$22.00,1,Expired product batch,Refunded,2026-02-18,1
+RET-021,ORD-8821,Sara Lance,Home & Kitchen,Stainless Knife Set,$135.00,1,Dull blades,Refunded,2026-02-20,-5
+RET-022,ORD-8822,Tony Stark,electronics,Arc Light Desk Lamp,$450.00,1,Flickering LED,Pending,invalid_date_str,2
+RET-023,ORD-8823,Ursula Buffay,Apparel,Yoga Pants,$42.00,1,Torn seam,Approved,2026-02-24,2
+RET-024,ORD-8824,Victor Stone,Footwear,Basketball High-Tops,$160.00,1,Shoe sole separated,Refunded,2026-02-25,1
+RET-025,ORD-8825,Wanda Maximoff,Home & Kitchen,Air Fryer XL,$129.99,1,Missing recipe booklet,Rejected,2026-02-27,3
+RET-001,ORD-8801,John Doe,Electronics,Wireless Bluetooth Earbuds,$49.99,1,Duplicate entry,Refunded,2026-01-10,1
+RET-026,ORD-8826,Xavier Charles,Books,Neurology Reference 3rd Ed,$180.00,1,Missing index pages,Refunded,2026-03-01,2
+RET-027,ORD-8827,Ygritte Snow,Apparel,Thermal Winter Gloves,$35.00,2,Not waterproof as claimed,Pending,2026-03-03,2
+RET-028,ORD-8828,Zack Morris,Electronics,Portable Power Bank 20k,$39.99,1,Doesn't hold charge,refunded,05-03-2026,1
+RET-029,ORD-8829,Arthur Dent,Home & Kitchen,Digital Kitchen Scale,-999,1,Inaccurate calibration,Pending,2026-03-08,2
+RET-030,ORD-8830,Bruce Wayne,Footwear,Leather Oxford Shoes,$220.00,1,Squeaking sound when walking,Refunded,2026-03-10,3

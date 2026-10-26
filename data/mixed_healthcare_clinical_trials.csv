@@ -1,0 +1,11 @@
+subject_id,site_code,enrollment_timestamp,age_group,gender,treatment_arm,dosage,baseline_biomarker,post_treatment_biomarker,adverse_event,severity_grade,efficacy_pct,clinical_notes
+SUBJ-101,SITE_BOS,2026-01-05T08:30:00Z,45-54,F,Active Drug A,50mg,142.5,98.2,no,None,88.5%,"Patient tolerated well, reported increased energy levels."
+SUBJ-102,SITE_BOS,2026-01-06T09:15:20-05:00,55-64,M,Active Drug A,100mg,185.0,110.4,yes,Mild,92.1%,"Mild transient headache on Day 2, resolved spontaneously without medication."
+SUBJ-103,SITE_NYC,2026-01-08T11:00:00Z,35-44,F,Placebo,0mg,139.2,138.8,FALSE,None,2.4%,"No significant change in biomarker profile, consistent with control cohort."
+SUBJ-104,SITE_NYC,2026-01-10T14:20:15-05:00,65+,M,Active Drug B,75mg,210.8,145.0,1,Moderate,76.8%,"Elevated liver enzymes observed at Week 4, dosage adjusted down to 50mg."
+SUBJ-105,SITE_CHI,2026-01-12T10:05:00Z,25-34,F,Active Drug A,50mg,128.4,82.1,0,None,94.0%,"Optimal biomarker reduction, patient completed all scheduled exercise tests."
+SUBJ-106,SITE_CHI,2026-01-14T13:40:00-06:00,45-54,M,Placebo,0mg,160.1,162.3,N,None,0.0%,Adherence confirmed via smart bottle cap logs.
+SUBJ-107,SITE_LAX,2026-01-15T09:00:00Z,55-64,F,Active Drug B,150mg,195.4,122.0,TRUE,Mild,84.3%,"Minor rash near injection site, treated with topical hydrocortisone."
+SUBJ-108,SITE_LAX,2026-01-18T16:10:00-08:00,65+,M,Active Drug A,100mg,225.0,130.5,Y,Moderate,89.6%,Transient fatigue during first 48 hours; vitals remained within normal limits.
+SUBJ-109,SITE_SEA,2026-01-20T11:30:00Z,35-44,M,Placebo,0mg,144.0,142.0,false,None,1.5%,Completed protocol without deviations; follow-up visit scheduled.
+SUBJ-110,SITE_SEA,2026-01-22T15:45:00-08:00,45-54,F,Active Drug B,75mg,172.6,105.1,no,None,85.2%,"Excellent clinical response, patient reported marked improvement in mobility."

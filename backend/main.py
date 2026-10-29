@@ -2,17 +2,20 @@
 FastAPI application backend for the Autonomous Data Analyst Agent.
 """
 import os
+import json
 import shutil
 import uuid as _uuid
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 
 from backend.models import UploadResponse, AskRequest, AskResponse, StatsResponse, ProfileResponse, AutonomousReport
 from backend.ingestion import load_file_into_duckdb
-from backend.agent.graph import run_agent, get_progress
+from backend.agent.graph import run_agent, run_agent_stream, get_progress
 from backend.agent.tools_autonomous import run_autonomous_dataset_investigation
+from backend.agent.semantic_layer import load_metrics, save_custom_metric
 from backend.logging_db import get_stats
 from backend.profiling import profile_dataset
 
@@ -115,6 +118,38 @@ def ask_question(request: AskRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Agent execution failed: {str(e)}")
 
+@app.post("/ask/stream")
+def ask_question_stream(request: AskRequest):
+    """
+    Server-Sent Events (SSE) streaming endpoint for real-time thought step visualization.
+    """
+    if not request.question.strip():
+        raise HTTPException(status_code=400, detail="Question cannot be empty.")
+
+    def event_stream():
+        try:
+            for item in run_agent_stream(
+                dataset_id=request.dataset_id,
+                question=request.question,
+                session_id=request.session_id,
+                conversation_context=getattr(request, "conversation_context", ""),
+                request_id=request.request_id,
+            ):
+                yield f"data: {json.dumps(item)}\n\n"
+        except Exception as e:
+            yield f"data: {json.dumps({'event': 'error', 'error': str(e)})}\n\n"
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"
+        }
+    )
+
+
 @app.post("/analyze/{dataset_id}", response_model=AutonomousReport)
 def analyze_dataset_autonomous(dataset_id: str, force: bool = False):
     """
@@ -133,7 +168,42 @@ def analyze_dataset_autonomous(dataset_id: str, force: bool = False):
 def get_observability_stats():
     return get_stats()
 
+@app.get("/metrics")
+def get_semantic_metrics():
+    """
+    Returns the active dictionary of registered enterprise business metrics.
+    """
+    return load_metrics()
+
+@app.post("/metrics")
+def create_custom_metric(metric: dict):
+    """
+    Registers or updates a business metric in the Semantic Metric Layer.
+    """
+    m_id = metric.get("name", "").strip().lower().replace(" ", "_")
+    if not m_id:
+        raise HTTPException(status_code=400, detail="Metric must have a valid name.")
+    ok = save_custom_metric(m_id, metric)
+    if not ok:
+        raise HTTPException(status_code=500, detail="Failed to save custom metric.")
+    return {"status": "ok", "message": f"Metric '{metric.get('name')}' successfully registered."}
+
+@app.get("/benchmark/latest")
+def get_latest_benchmark():
+    """
+    Returns the latest benchmark scorecard and evaluation results.
+    """
+    bench_file = "./benchmark_results.json"
+    if os.path.exists(bench_file):
+        try:
+            with open(bench_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to read benchmark results: {e}")
+    return {"status": "none", "message": "No benchmark run recorded yet."}
+
 # Mount compiled static React frontend if dist directory exists
 dist_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "dist")
 if os.path.exists(dist_dir):
     app.mount("/", StaticFiles(directory=dist_dir, html=True), name="static")
+

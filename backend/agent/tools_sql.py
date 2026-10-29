@@ -1,14 +1,16 @@
 """
 SQL Generation & Guardrails Tool.
-Generates DuckDB SQL from natural language, enforces read-only guardrails, and self-corrects on syntax errors.
+Generates DuckDB SQL from natural language, enforces AST read-only guardrails via sqlglot, and self-corrects on syntax errors.
 """
 import re
 import pandas as pd
 import duckdb
+import sqlglot
+from sqlglot import exp
 from backend.llm_client import call_llm
+from backend.agent.semantic_layer import build_semantic_guidance_prompt
 
 SQL_LLM_TIMEOUT = 90.0  # seconds; main SQL generation is the call that matters most
-
 
 SQL_GUARDRAIL_FORBIDDEN = [
     r"\bDROP\b", r"\bDELETE\b", r"\bINSERT\b", r"\bUPDATE\b",
@@ -18,25 +20,78 @@ SQL_GUARDRAIL_FORBIDDEN = [
 def validate_sql_guardrails(sql: str) -> tuple[bool, str]:
     """
     Validates that the SQL query is strictly a read-only SELECT statement.
+    Employs sqlglot AST analysis to block multi-statement injection and mutation statements.
     """
-    cleaned_sql = sql.strip().strip(";").upper()
-    
+    cleaned_sql = sql.strip().strip(";")
+    if not cleaned_sql:
+        return False, "Empty SQL query."
+
+    # 1. Regex keyword guardrails
     for pattern in SQL_GUARDRAIL_FORBIDDEN:
-        if re.search(pattern, cleaned_sql):
+        if re.search(pattern, cleaned_sql, re.IGNORECASE):
             return False, "Forbidden keyword detected in query. Only read-only SELECT queries are allowed."
-            
-    if not cleaned_sql.startswith("SELECT") and not cleaned_sql.startswith("WITH"):
-        return False, "Query must begin with SELECT or WITH."
-        
+
+    # 2. sqlglot AST Deep Inspection
+    try:
+        parsed_statements = sqlglot.parse(cleaned_sql, read="duckdb")
+        if not parsed_statements:
+            return False, "Failed to parse SQL statement."
+
+        # Block multiple statements (semicolon chained attacks)
+        if len(parsed_statements) > 1:
+            return False, "Forbidden keyword detected in query. Multiple SQL statements are not permitted."
+
+        root_expr = parsed_statements[0]
+        if root_expr is None:
+            return False, "Parsed expression is null."
+
+        # AST must be Select or Union
+        if not isinstance(root_expr, (exp.Select, exp.Union)):
+            # If wrapped in a CTE (WITH clause)
+            if isinstance(root_expr, exp.Expression) and root_expr.find(exp.Select):
+                pass
+            else:
+                return False, "Query must begin with SELECT or WITH."
+
+        # Prohibit any mutation AST node types anywhere in the tree
+        forbidden_ast_nodes = (
+            exp.Drop, exp.Delete, exp.Insert, exp.Update, exp.Alter,
+            exp.Create, exp.Command, exp.Truncate, exp.Transaction
+        )
+        for node_type in forbidden_ast_nodes:
+            if root_expr.find(node_type):
+                return False, f"Forbidden keyword detected in query. Operation '{node_type.__name__}' is forbidden."
+
+    except sqlglot.errors.ParseError as pe:
+        # Fallback to string check if dialect syntax variant encountered
+        clean_upper = cleaned_sql.upper()
+        if not clean_upper.startswith("SELECT") and not clean_upper.startswith("WITH"):
+            return False, f"Query must begin with SELECT or WITH."
+    except Exception as e:
+        clean_upper = cleaned_sql.upper()
+        if not clean_upper.startswith("SELECT") and not clean_upper.startswith("WITH"):
+            return False, "Query must begin with SELECT or WITH."
+
     return True, ""
 
 def enforce_limit(sql: str, max_limit: int = 500) -> str:
     """
-    Ensures query has a LIMIT clause capping results.
+    Ensures query has a LIMIT clause capping results, utilizing AST manipulation when possible.
     """
+    try:
+        parsed = sqlglot.parse_one(sql.strip().rstrip(";"), read="duckdb")
+        if isinstance(parsed, exp.Select):
+            if parsed.args.get("limit") is None:
+                parsed = parsed.limit(max_limit)
+                return parsed.sql(dialect="duckdb")
+            return sql
+    except Exception:
+        pass
+
     if "LIMIT" not in sql.upper():
         sql = sql.strip().rstrip(";") + f" LIMIT {max_limit}"
     return sql
+
 
 _STOPWORDS = {
     'the', 'a', 'an', 'of', 'in', 'on', 'for', 'to', 'and', 'or', 'is', 'are', 'was', 'were', 'be',
@@ -313,8 +368,10 @@ def generate_and_run_sql(
         "5. Always select meaningful columns that directly answer the question (SUM, COUNT, DISTINCT, etc.).\n"
         "6. Wrap column and table names that contain spaces or special characters in double quotes.\n"
         "7. Dates written with slashes (e.g. 12/02/2026) are DD/MM/YYYY (12 February 2026). Convert them to ISO 'YYYY-MM-DD' (2026-02-12).\n"
-        "8. Output ONLY the SQL inside a ```sql ... ``` block. No explanations."
+        "8. For columns containing currency symbols (e.g. '$49.99'), use TRY_CAST(REPLACE(col, '$', '') AS DOUBLE).\n"
+        "9. Output ONLY the SQL inside a ```sql ... ``` block. No explanations."
     )
+
     
     plan_context = ""
     if plan:
@@ -325,6 +382,10 @@ def generate_and_run_sql(
             f"- Dimensions to group by: {', '.join(plan.get('dimensions', []))}\n"
             f"- Operations: {', '.join(plan.get('operations', []))}\n"
         )
+
+    semantic_guidance = build_semantic_guidance_prompt(question, full_schema)
+    if semantic_guidance:
+        plan_context += f"\n{semantic_guidance}\n"
 
     prompt = (
         f"Database Schema (use ONLY these exact table/column names):\n{full_schema}\n"

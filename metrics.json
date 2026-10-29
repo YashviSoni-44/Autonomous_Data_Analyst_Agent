@@ -1,0 +1,13 @@
+{
+  "nps_score": {
+    "name": "NPS Score",
+    "label": "Net Promoter Score",
+    "aliases": [
+      "nps",
+      "net promoter score"
+    ],
+    "formula": "(COUNT(promoters) - COUNT(detractors)) * 100.0 / COUNT(responses)",
+    "category": "satisfaction",
+    "description": "Customer loyalty and satisfaction index."
+  }
+}

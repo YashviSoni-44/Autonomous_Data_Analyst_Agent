@@ -23,6 +23,7 @@ from backend.agent.tools_analytics import (
     run_time_series_forecast,
 )
 from backend.agent.tools_critic import verify_analysis_output
+from backend.agent.semantic_layer import build_semantic_guidance_prompt, detect_matched_metrics
 from backend.logging_db import log_run
 
 
@@ -57,6 +58,12 @@ def node_plan(state: AgentState) -> AgentState:
     join_hints = build_join_hints(conn)
     enriched_schema = schema_str + join_hints
 
+    # Discover Semantic Metric Layer rules matching the query
+    matched_metrics = detect_matched_metrics(state["question"])
+    semantic_guidance = build_semantic_guidance_prompt(state["question"], enriched_schema)
+    if semantic_guidance:
+        enriched_schema = f"{enriched_schema}\n{semantic_guidance}"
+
     # Prepend conversation context for follow-up awareness
     context = state.get("conversation_context", "")
     if context:
@@ -68,11 +75,12 @@ def node_plan(state: AgentState) -> AgentState:
     trace = list(state.get("trace", []))
     join_note = f" | {len(join_hints.splitlines())} join hints detected" if join_hints.strip() else ""
     route_badge = f" [Intent: {analysis_type.upper()}]" if analysis_type != "sql" else ""
+    metric_note = f" | Semantic Metrics: {', '.join(m['name'] for m in matched_metrics)}" if matched_metrics else ""
     trace.append({
         "node": "Planner",
         "detail": (
             f"Generated Analysis Plan: Intent '{plan.get('intent', '')}'{route_badge} "
-            f"with {len(plan.get('steps', []))} steps{join_note}"
+            f"with {len(plan.get('steps', []))} steps{join_note}{metric_note}"
         )
     })
 
@@ -443,3 +451,114 @@ def run_agent(dataset_id: str, question: str, session_id: str = None,
         "follow_up_questions": final_state.get("follow_up_questions", []),
         "join_hints": final_state.get("join_hints"),
     }
+
+
+def run_agent_stream(dataset_id: str, question: str, session_id: str = None,
+                     conversation_context: str = "", request_id: str = None):
+    """
+    Generator yielding real-time execution steps and final result payload for SSE streaming.
+    """
+    if not session_id:
+        session_id = str(uuid.uuid4())[:8]
+
+    start_time = time.time()
+
+    initial_state: AgentState = {
+        "dataset_id": dataset_id,
+        "session_id": session_id,
+        "question": question,
+        "schema_str": "",
+        "join_hints": None,
+        "conversation_context": conversation_context,
+        "plan": None,
+        "analysis_type": None,
+        "analytics_result": None,
+        "sql": None,
+        "df_data": None,
+        "chart_base64": None,
+        "summary": "",
+        "critic_result": None,
+        "follow_up_questions": [],
+        "trace": [],
+        "retries": 0,
+        "success": False,
+        "error": None,
+        "start_time": start_time,
+    }
+
+    config = {"configurable": {"thread_id": f"{dataset_id}:{session_id}"}}
+    yield {
+        "event": "start",
+        "stage": "Starting",
+        "percent": 5,
+        "session_id": session_id,
+        "message": "Initializing autonomous agent pipeline..."
+    }
+
+    stage_dict = dict(PROGRESS_STAGES)
+    stage_names = [n for n, _ in PROGRESS_STAGES]
+
+    try:
+        for update in agent_app.stream(initial_state, config=config, stream_mode="updates"):
+            for node_name, node_state in update.items():
+                trace = node_state.get("trace", [])
+                latest_detail = trace[-1]["detail"] if trace else f"Finished {node_name}"
+                idx = stage_names.index(node_name) + 1 if node_name in stage_names else 1
+                percent = min(int((idx / len(PROGRESS_STAGES)) * 100), 95)
+                stage_label = stage_dict.get(node_name, node_name.replace('_', ' ').capitalize())
+
+                yield {
+                    "event": "step",
+                    "node": stage_label,
+                    "stage": stage_label,
+                    "percent": percent,
+                    "detail": latest_detail,
+                    "plan": node_state.get("plan") if "planner" in node_name else None,
+                    "sql": node_state.get("sql") if "sql" in node_name else None,
+                }
+        final_state = agent_app.get_state(config).values
+    except Exception as e:
+        yield {
+            "event": "error",
+            "error": str(e),
+            "message": f"Execution encountered an error: {str(e)}"
+        }
+        return
+
+    latency = round(time.time() - start_time, 2)
+
+    log_run(
+        dataset_id=dataset_id,
+        question=question,
+        sql=final_state.get("sql") or "",
+        latency=latency,
+        retries=final_state.get("retries", 0),
+        success=final_state.get("success", False),
+        error=final_state.get("error"),
+    )
+
+    result_payload = {
+        "question": question,
+        "session_id": session_id,
+        "plan": final_state.get("plan"),
+        "analysis_type": final_state.get("analysis_type"),
+        "analytics_result": final_state.get("analytics_result"),
+        "sql": final_state.get("sql"),
+        "chart_base64": final_state.get("chart_base64"),
+        "summary": final_state.get("summary", ""),
+        "critic_result": final_state.get("critic_result"),
+        "trace": final_state.get("trace", []),
+        "retries": final_state.get("retries", 0),
+        "success": final_state.get("success", False),
+        "error": final_state.get("error"),
+        "follow_up_questions": final_state.get("follow_up_questions", []),
+        "join_hints": final_state.get("join_hints"),
+    }
+
+    yield {
+        "event": "result",
+        "percent": 100,
+        "stage": "Complete",
+        "data": result_payload
+    }
+

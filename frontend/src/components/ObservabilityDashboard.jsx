@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, RefreshCw, CheckCircle, CheckCircle2, XCircle, AlertOctagon, Clock, RotateCcw, Cpu, Terminal, Copy, Check } from 'lucide-react';
+import { Activity, RefreshCw, CheckCircle, CheckCircle2, XCircle, AlertOctagon, Clock, RotateCcw, Cpu, Terminal, Copy, Check, ShieldCheck, Layers, BookOpen, Award, Target } from 'lucide-react';
 import { BACKEND_URL } from '../config';
 
 export default function ObservabilityDashboard() {
   const [stats, setStats] = useState(null);
   const [health, setHealth] = useState(null);
+  const [metricsList, setMetricsList] = useState({});
+  const [benchmark, setBenchmark] = useState(null);
   const [loading, setLoading] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
 
@@ -18,9 +20,11 @@ export default function ObservabilityDashboard() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [statsRes, healthRes] = await Promise.all([
+      const [statsRes, healthRes, metricsRes, benchRes] = await Promise.all([
         fetch(`${BACKEND_URL}/stats`),
-        fetch(`${BACKEND_URL}/health`)
+        fetch(`${BACKEND_URL}/health`),
+        fetch(`${BACKEND_URL}/metrics`),
+        fetch(`${BACKEND_URL}/benchmark/latest`)
       ]);
 
       if (statsRes.ok) {
@@ -31,6 +35,18 @@ export default function ObservabilityDashboard() {
       if (healthRes.ok) {
         const healthData = await healthRes.json();
         setHealth(healthData);
+      }
+
+      if (metricsRes.ok) {
+        const mData = await metricsRes.json();
+        setMetricsList(mData);
+      }
+
+      if (benchRes.ok) {
+        const bData = await benchRes.json();
+        if (bData && bData.overall_accuracy_pct !== undefined) {
+          setBenchmark(bData);
+        }
       }
     } catch (err) {
       console.error('Observability fetch error:', err);
@@ -60,7 +76,7 @@ export default function ObservabilityDashboard() {
       </div>
 
       {/* Backend Health Status */}
-      <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '10px' }}>
+      <div style={{ marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '10px' }}>
         <Cpu size={18} color="var(--accent-cyan)" />
         <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Backend Engine Status:</span>
         {health ? (
@@ -73,6 +89,54 @@ export default function ObservabilityDashboard() {
           </span>
         )}
       </div>
+
+      {/* Benchmark Scorecard Banner */}
+      {benchmark && (
+        <div style={{
+          marginBottom: '1.5rem',
+          padding: '1.25rem',
+          background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%)',
+          border: '1px solid rgba(232, 255, 138, 0.35)',
+          borderRadius: '12px',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Award size={20} color="var(--accent-lime)" />
+              <span style={{ fontWeight: 800, color: 'var(--accent-lime)', fontSize: '0.98rem' }}>
+                Automated Benchmark Scorecard (LLM-as-a-Judge)
+              </span>
+            </div>
+            <span className="badge-tag badge-green" style={{ fontSize: '0.75rem', fontWeight: 700 }}>
+              Grade: {benchmark.benchmark_grade}
+            </span>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem', marginTop: '0.5rem' }}>
+            <div style={{ padding: '0.6rem 0.8rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-subtle)', textTransform: 'uppercase' }}>End-to-End Accuracy</div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-lime)' }}>{benchmark.overall_accuracy_pct}%</div>
+            </div>
+            <div style={{ padding: '0.6rem 0.8rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-subtle)', textTransform: 'uppercase' }}>SQL Execution Rate</div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>{benchmark.sql_success_rate_pct}%</div>
+            </div>
+            <div style={{ padding: '0.6rem 0.8rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-subtle)', textTransform: 'uppercase' }}>AST Compliance</div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-emerald)' }}>{benchmark.ast_guardrails_compliance_pct}%</div>
+            </div>
+            <div style={{ padding: '0.6rem 0.8rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-subtle)', textTransform: 'uppercase' }}>Hallucination Defense</div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-purple)' }}>{benchmark.hallucination_defense_rate_pct}%</div>
+            </div>
+            <div style={{ padding: '0.6rem 0.8rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-subtle)', textTransform: 'uppercase' }}>Avg Latency</div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>{benchmark.avg_latency_seconds}s</div>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {stats ? (
         <>
@@ -230,6 +294,67 @@ export default function ObservabilityDashboard() {
                 No chat queries logged yet. Ask a question in <strong>Agent Chat Studio</strong> to see live execution telemetry appear here!
               </div>
             )}
+          </div>
+
+          {/* Semantic Metric Layer & AST Guardrail Security Panel */}
+          <div style={{ marginTop: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <BookOpen size={18} color="var(--accent-lime)" />
+                <h3 style={{ fontSize: '1rem', fontWeight: 700 }}>
+                  Enterprise Semantic Metric Layer (Business Definitions)
+                </h3>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span className="badge-tag badge-green" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.72rem' }}>
+                  <ShieldCheck size={12} /> sqlglot AST Read-Only Enforced
+                </span>
+                <span className="badge-tag badge-cyan" style={{ fontSize: '0.72rem' }}>
+                  {Object.keys(metricsList).length} Registered Metrics
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.85rem' }}>
+              {Object.entries(metricsList).map(([mKey, mVal]) => (
+                <div key={mKey} style={{
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '10px',
+                  padding: '1rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.4rem'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--accent-lime)' }}>
+                      {mVal.name}
+                    </span>
+                    <span className="badge-tag badge-purple" style={{ fontSize: '0.68rem', textTransform: 'uppercase' }}>
+                      {mVal.category || 'Metric'}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                    {mVal.label}
+                  </div>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.2rem 0', lineHeight: 1.4 }}>
+                    {mVal.description}
+                  </p>
+                  <div style={{
+                    marginTop: 'auto',
+                    padding: '0.4rem 0.5rem',
+                    background: 'rgba(0, 0, 0, 0.3)',
+                    borderRadius: '6px',
+                    fontSize: '0.72rem',
+                    fontFamily: 'var(--font-mono)',
+                    color: 'var(--accent-cyan)',
+                    overflowX: 'auto'
+                  }}>
+                    {mVal.formula}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
         </>

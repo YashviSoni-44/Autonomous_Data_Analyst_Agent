@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Sparkles, ChevronDown, ChevronUp, BarChart3, Terminal, Activity, Trash2, HelpCircle, Layers, TrendingUp, Link2, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Send, Sparkles, ChevronDown, ChevronUp, BarChart3, Terminal, Activity, Trash2, HelpCircle, Layers, TrendingUp, Link2, AlertTriangle, ShieldCheck, CheckCircle2, Loader2 } from 'lucide-react';
 import CodeBlock from './CodeBlock';
 import ChartModal from './ChartModal';
 import { BACKEND_URL } from '../config';
@@ -33,6 +33,8 @@ export default function AgentChatStudio({
   const [pendingTurnQuestion, setPendingTurnQuestion] = useState(null);
   const [progress, setProgress] = useState({ percent: 0, stage: 'Starting' });
   const [elapsed, setElapsed] = useState(0);
+  const [liveThoughts, setLiveThoughts] = useState([]);
+
 
   const feedRef = useRef(null);
 
@@ -81,68 +83,125 @@ export default function AgentChatStudio({
       request_id: requestId,
     };
 
-    // Show the question immediately + start progress tracking
+    // Show question immediately + start progress & stream tracking
     setPendingTurnQuestion(question);
-    setProgress({ percent: 0, stage: 'Starting' });
+    setProgress({ percent: 5, stage: 'Starting' });
+    setLiveThoughts([]);
     setElapsed(0);
     const startedAt = Date.now();
     const tickTimer = setInterval(() => setElapsed((Date.now() - startedAt) / 1000), 100);
-    const pollTimer = setInterval(async () => {
-      try {
-        const r = await fetch(`${BACKEND_URL}/progress/${requestId}`);
-        if (r.ok) {
-          const p = await r.json();
-          setProgress(prev => ({ percent: Math.max(prev.percent, p.percent), stage: p.stage }));
-        }
-      } catch (_) { /* ignore transient polling errors */ }
-    }, 500);
+
+    let streamCompleted = false;
 
     try {
-      const res = await fetch(`${BACKEND_URL}/ask`, {
+      // 1. Attempt Real-time SSE streaming
+      const streamRes = await fetch(`${BACKEND_URL}/ask/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.detail || 'Backend execution failed');
-      }
+      if (streamRes.ok && streamRes.body) {
+        const reader = streamRes.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let buffer = '';
 
-      const data = await res.json();
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-      if (data.session_id) {
-        setSessionId(data.session_id);
-      }
+          buffer += decoder.decode(value, { stream: true });
+          const messages = buffer.split('\n\n');
+          buffer = messages.pop() || '';
 
-      if (data.follow_up_questions) {
-        setFollowUpQuestions(data.follow_up_questions);
-      }
+          for (const msg of messages) {
+            const trimmed = msg.trim();
+            if (trimmed.startsWith('data: ')) {
+              try {
+                const item = JSON.parse(trimmed.slice(6));
+                if (item.event === 'start') {
+                  setProgress({ percent: item.percent || 10, stage: item.stage || 'Starting' });
+                } else if (item.event === 'step') {
+                  setProgress({ percent: item.percent || 50, stage: item.stage });
+                  if (item.detail) {
+                    setLiveThoughts(prev => [...prev, item]);
+                  }
+                } else if (item.event === 'result') {
+                  const data = item.data;
+                  if (data.session_id) setSessionId(data.session_id);
+                  if (data.follow_up_questions) setFollowUpQuestions(data.follow_up_questions);
 
-      setConversationHistory(prev => [
-        ...prev,
-        {
-          question,
-          summary: data.summary,
-          sql: data.sql,
-          chart_base64: data.chart_base64,
-          plan: data.plan,
-          join_hints: data.join_hints,
-          analysis_type: data.analysis_type,
-          analytics_result: data.analytics_result,
-          trace: data.trace,
-          retries: data.retries,
-          session_id: data.session_id,
-          critic_result: data.critic_result,
+                  setConversationHistory(prev => [
+                    ...prev,
+                    {
+                      question,
+                      summary: data.summary,
+                      sql: data.sql,
+                      chart_base64: data.chart_base64,
+                      plan: data.plan,
+                      join_hints: data.join_hints,
+                      analysis_type: data.analysis_type,
+                      analytics_result: data.analytics_result,
+                      trace: data.trace,
+                      retries: data.retries,
+                      session_id: data.session_id,
+                      critic_result: data.critic_result,
+                    }
+                  ]);
+                  streamCompleted = true;
+                } else if (item.event === 'error') {
+                  throw new Error(item.error || item.message);
+                }
+              } catch (parseErr) {
+                console.error('SSE JSON parse error:', parseErr);
+              }
+            }
+          }
         }
-      ]);
+      }
+
+      // 2. Fallback to standard /ask if streaming wasn't completed
+      if (!streamCompleted) {
+        const res = await fetch(`${BACKEND_URL}/ask`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.detail || 'Backend execution failed');
+        }
+
+        const data = await res.json();
+        if (data.session_id) setSessionId(data.session_id);
+        if (data.follow_up_questions) setFollowUpQuestions(data.follow_up_questions);
+
+        setConversationHistory(prev => [
+          ...prev,
+          {
+            question,
+            summary: data.summary,
+            sql: data.sql,
+            chart_base64: data.chart_base64,
+            plan: data.plan,
+            join_hints: data.join_hints,
+            analysis_type: data.analysis_type,
+            analytics_result: data.analytics_result,
+            trace: data.trace,
+            retries: data.retries,
+            session_id: data.session_id,
+            critic_result: data.critic_result,
+          }
+        ]);
+      }
     } catch (err) {
       alert(`Error asking question: ${err.message}`);
     } finally {
-      clearInterval(pollTimer);
       clearInterval(tickTimer);
       setLoading(false);
       setPendingTurnQuestion(null);
+      setLiveThoughts([]);
     }
   };
 
@@ -518,6 +577,31 @@ export default function AgentChatStudio({
               <div style={{ fontSize: '0.72rem', color: 'var(--text-subtle)', marginTop: '0.5rem' }}>
                 Planner → SQL → Analytics → Chart → Summary → Verification → Follow-ups
               </div>
+
+              {liveThoughts.length > 0 && (
+                <div style={{ marginTop: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                  {liveThoughts.map((t, tIdx) => (
+                    <div key={tIdx} style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: '0.5rem',
+                      fontSize: '0.82rem',
+                      padding: '0.45rem 0.65rem',
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      borderRadius: '6px',
+                      borderLeft: '2px solid var(--accent-cyan)'
+                    }}>
+                      <CheckCircle2 size={14} color="var(--accent-lime)" style={{ marginTop: '0.15rem', flexShrink: 0 }} />
+                      <div style={{ lineHeight: 1.4 }}>
+                        <span style={{ fontWeight: 700, color: 'var(--accent-cyan)', marginRight: '0.4rem' }}>
+                          [{t.node || t.stage}]
+                        </span>
+                        <span style={{ color: 'var(--text-main)' }}>{t.detail}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </>
         )}

@@ -836,3 +836,44 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+/* Icon Buttons & Toolbar */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.metric-card:hover {
+  border-color: rgba(232, 255, 138, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+@media print {
+  body {
+    background: #0f172a !important;
+    color: #f8fafc !important;
+  }
+  .sidebar, .top-header, .btn-primary, .chip-btn, .icon-btn {
+    display: none !important;
+  }
+  .printable-report-container {
+    width: 100% !important;
+    padding: 0 !important;
+  }
+}
+

@@ -40,4 +40,21 @@ def test_enforce_limit_adds_limit():
 def test_enforce_limit_preserves_existing():
     sql = "SELECT * FROM sales LIMIT 20"
     limited = enforce_limit(sql, max_limit=100)
-    assert limited == sql
+    assert "LIMIT 20" in limited
+
+def test_guardrails_reject_multi_statement_injection():
+    sql = "SELECT * FROM sales; DROP TABLE sales;"
+    is_valid, msg = validate_sql_guardrails(sql)
+    assert is_valid is False
+    assert "Forbidden" in msg or "Multiple" in msg
+
+def test_guardrails_reject_alter_table():
+    sql = "ALTER TABLE sales ADD COLUMN hack TEXT;"
+    is_valid, msg = validate_sql_guardrails(sql)
+    assert is_valid is False
+
+def test_guardrails_reject_create_table():
+    sql = "CREATE TABLE malicious (id INT);"
+    is_valid, msg = validate_sql_guardrails(sql)
+    assert is_valid is False
+

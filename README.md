@@ -36,10 +36,26 @@
 
 ### 6. Modern React Dashboard & Observability
 - **Four-Tab Interface**:
-  1. `💬 Agent Chat Studio`: Interactive conversational chat with collapsible plans, SQL blocks, visualizations, Critic badges, and follow-up chips.
-  2. `⚡ Autonomous Deep Dive`: Zero-prompt executive report with one-click deep-dive questions.
+  1. `💬 Agent Chat Studio`: Interactive conversational chat with real-time SSE streaming, collapsible plans, SQL blocks, visualizations, Critic badges, and follow-up chips.
+  2. `⚡ Autonomous Deep Dive`: Zero-prompt executive report with 1-click Executive PDF/Markdown exports and deep-dive inquiries.
   3. `🔍 Data Quality & Profiling`: Column distributions, data types, and quality scoring.
-  4. `📊 Observability & Metrics`: Latency tracking, success rates, retry counts, and execution traces stored in SQLite.
+  4. `📊 Observability & Metrics`: Latency tracking, success rates, retry counts, execution traces, and enterprise metric dictionaries stored in SQLite.
+
+### 7. Executive Export Suite
+- **1-Click Executive PDF Export**: Generates a high-resolution, multi-page branded PDF dossier (`jspdf` + `html2canvas`) complete with executive summaries, core KPI cards, diagnostic anomaly warnings, and rendered charts.
+- **Markdown & Clipboard Export**: Download clean markdown reports or copy executive takeaways directly to clipboard.
+
+### 8. Real-Time Streaming UX (Server-Sent Events)
+- **Node-by-Node Thought Streaming**: Real-time progress bar and live thought cards via FastAPI `StreamingResponse` (`text/event-stream`), showing Planner, SQL generation, and Critic verification as they execute.
+- **Graceful Fallback**: Automatically and seamlessly falls back to standard HTTP POST if streaming is interrupted.
+
+### 9. AST Read-Only Guardrails & Semantic Metric Layer
+- **sqlglot AST Deep Inspection**: Mathematically guarantees single-statement, read-only `SELECT`/`UNION` queries and completely blocks multi-statement chained attacks (`SELECT 1; DROP TABLE ...`) and DDL/DML mutations.
+- **Enterprise Semantic Metric Layer**: Pre-loaded with business formulas (MRR, ARR, AOV, Churn Rate, Gross Margin) to prevent business logic hallucinations.
+
+### 10. Automated Benchmark & Evaluation Suite (LLM-as-a-Judge)
+- **Quantitative Quality Benchmarking (`tests/benchmark_eval.py`)**: Runs golden multi-domain queries and scores end-to-end accuracy, SQL execution rate, AST compliance, hallucination defense rate, and latency with automated grading (`A+`, `A`, `B`).
+
 
 ---
 
@@ -221,9 +237,30 @@ Run the complete test suite (41 unit and integration tests):
 ./venv/bin/python -m pytest tests/test_memory_and_relations.py -v
 ./venv/bin/python -m pytest tests/test_profiling.py -v
 ./venv/bin/python -m pytest tests/test_sql_guardrails.py -v
+./venv/bin/python -m pytest tests/test_semantic_layer.py -v
+
+# Run the Automated LLM-as-a-Judge Benchmark Suite
+./venv/bin/python tests/benchmark_eval.py
 ```
+
+---
+
+## 🚀 Deploying to Vercel
+
+The frontend is configured as a production-ready Single Page App (SPA) with `frontend/vercel.json`:
+
+1. **Push your code to GitHub**.
+2. **Import the repository into [Vercel](https://vercel.com)**:
+   - Root Directory: `frontend`
+   - Framework Preset: `Vite`
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+3. **Set Environment Variable in Vercel**:
+   - `VITE_BACKEND_URL`: Your deployed backend API URL (e.g., `https://your-backend.railway.app` or `https://your-backend.onrender.com`).
+4. Click **Deploy**. Vercel will build and deploy the dashboard globally on its edge CDN with clean SPA URL routing.
 
 ---
 
 ## 📄 License
 MIT License.
+
